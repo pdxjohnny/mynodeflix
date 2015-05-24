@@ -13,13 +13,13 @@ function set_headers (res) {
   }
 }
 
-/* GET users listing. */
+/* Set API headers */
 router.all('/', function(req, res, next) {
   set_headers(res);
   next();
 });
 
-/* GET users listing. */
+/* GET root send OK. */
 router.get('/', function(req, res, next) {
   var reponse = {"OK": true};
   reponse = JSON.stringify(reponse);
