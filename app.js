@@ -23,6 +23,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// app.use(function(req, res, next) {
+//   next();
+// });
+
 app.use('/', routes);
 app.use('/users', users);
 app.use('/api', api);
@@ -33,13 +37,6 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
-
-// Headers
-// app.use(function(req, res, next) {
-//   res.setHeader("Access-Control-Allow-Origin", "*");
-//   return next();
-// });
-
 
 // error handlers
 

@@ -1,7 +1,24 @@
+include bootstrap
 doctype html
 html
   head
     title= title
+    link(rel='stylesheet', href='/bootstrap/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/bootstrap/css/bootstrap-theme.min.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
+    +nav( title, "dropdown_menu")
+      +nav_item( "index.html", "active" ) Home
+      +nav_item( "about.html" ) About
+      +nav_item( "contact.html" ) Contact
+      +nav_item_dropdown( "#" )( label="Dropdown")
+        +nav_item( "#" ) Action
+        +nav_item( "#" ) Another action
+        +nav_item( "#" ) Something else here
+        +nav_divider
+        +nav_header Nav header
+        +nav_item( "#" ) Separated link
+        +nav_item( "#" ) One more separated link
     block content
+  script(src='/javascripts/jquery.min.js')
+  script(src='/bootstrap/js/bootstrap.min.js')

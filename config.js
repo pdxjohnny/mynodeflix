@@ -1,5 +1,9 @@
 // This file is for config options
 module.exports = {
+  // For webpage variables
+  "page": {
+    "title": "napp",
+  },
   // API cofing options
   "api": {
     // Basic will provide req with username and password strings
