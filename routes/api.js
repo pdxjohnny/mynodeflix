@@ -1,5 +1,6 @@
 var config = require('../config');
 var express = require('express');
+var cassandra = require('cassandra-driver');
 var router = express.Router();
 
 // Headers defined here
@@ -37,6 +38,7 @@ if ( typeof config.auth !== "undefined" &&
     // * auth array exists 
     // * first value matches the expected user 
     // * second value the expected password
+    // Add them to req for acess by subsequent functions
     req.username = auth[0]
     req.password = auth[1]
     if (!auth) {
@@ -54,18 +56,68 @@ if ( typeof config.auth !== "undefined" &&
   });
 }
 
+// For database
+router.use(function(req, res, next) {
+  var db = new cassandra.Client({ contactPoints: [config.host]});
+  req.db = db;
+  db.connect(function (err) {
+    if (err)
+    {
+      db.shutdown();
+      return console.error('There was an error when connecting', err);
+    }
+    else
+    {
+      next();
+      db.shutdown();
+    }
+  });
+});
 
 // Routes defined here
 
 /* GET root send OK. */
 router.get('/', function(req, res, next) {
-  var reponse = {
-    "OK": true,
-    "username": req.username,
-    "password": req.password,
-  };
-  reponse = JSON.stringify(reponse);
-  res.end(reponse);
+  console.log('Connected to cluster with %d host(s): %j', req.db.hosts.length, req.db.hosts.keys());
+  console.log('Keyspaces: %j', Object.keys(req.db.metadata.keyspaces));
+  var count = 0;
+  var query = 'SELECT * FROM \"examples\".\"basic\"';
+  req.db.eachRow(query, [], {autoPage: true},
+    // On recv row
+    function(n, row) {
+      ++count;
+      row = JSON.stringify(row);
+      res.write(row);
+    },
+    // End Callbask
+    function (err) {
+      console.log("Recived %d", count);
+      reponse = JSON.stringify(reponse);
+      res.end(reponse);
+    }
+  );
+});
+
+/* GET add send OK. */
+router.get('/add', function(req, res, next) {
+  console.log('Connected to cluster with %d host(s): %j', req.db.hosts.length, req.db.hosts.keys());
+  console.log('Keyspaces: %j', Object.keys(req.db.metadata.keyspaces));
+  var count = 0;
+  var query = 'SELECT * FROM \"examples\".\"basic\"';
+  req.db.eachRow(query, [], {autoPage: true},
+    // On recv row
+    function(n, row) {
+      ++count;
+      row = JSON.stringify(row);
+      res.write(row);
+    },
+    // End Callbask
+    function (err) {
+      console.log("Recived %d", count);
+      reponse = JSON.stringify(reponse);
+      res.end(reponse);
+    }
+  );
 });
 
 
