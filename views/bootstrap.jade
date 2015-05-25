@@ -31,5 +31,15 @@ mixin nav_divider
 mixin nav_header
     li.dropdown-header
         block
- 
+
 //- End navbar mixins
+
+//- Panel mixin
+mixin panel(heading, style)
+    - var style = (typeof style === 'undefined') ? "default" : style
+    div( class=["panel", "panel-" + style] )
+        .panel-heading= heading
+        .panel-body
+            block
+
+//- End panel mixins
