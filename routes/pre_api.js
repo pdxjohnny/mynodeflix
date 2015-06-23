@@ -22,7 +22,7 @@ if ( typeof config.api.auth !== "undefined" &&
 {
   router.use(function(req, res, next) {
     var auth;
-    // check whether an authorization header was send    
+    // check whether an authorization header was send
     if (req.headers.authorization)
     {
       // only accepting basic auth, so:
@@ -34,8 +34,8 @@ if ( typeof config.api.auth !== "undefined" &&
     }
 
     // checks if:
-    // * auth array exists 
-    // * first value matches the expected user 
+    // * auth array exists
+    // * first value matches the expected user
     // * second value the expected password
     // Add them to req for acess by subsequent functions
     req.username = auth[0]
@@ -58,22 +58,27 @@ if ( typeof config.api.auth !== "undefined" &&
   });
 }
 
+
 // For database
-router.use(function(req, res, next) {
-  var db = new cassandra.Client({ contactPoints: [config.database.host]});
-  req.db = db;
-  db.connect(function (err) {
-    if (err)
-    {
-      db.shutdown();
-      return console.error('There was an error when connecting', err);
-    }
-    else
-    {
-      next();
-      db.shutdown();
-    }
+if ( typeof config.database !== "undefined" &&
+  config.database.type === "cassandra" )
+{
+  router.use(function(req, res, next) {
+    var db = new cassandra.Client({ contactPoints: [config.database.host]});
+    req.db = db;
+    db.connect(function (err) {
+      if (err)
+      {
+        db.shutdown();
+        return console.error('There was an error when connecting', err);
+      }
+      else
+      {
+        next();
+        db.shutdown();
+      }
+    });
   });
-});
+}
 
 module.exports = router;

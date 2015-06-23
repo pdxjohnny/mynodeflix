@@ -3,30 +3,17 @@ var express = require('express');
 var async = require('async');
 var cassandra = require('cassandra-driver');
 var router = require("./pre_api");
+var fs = require("fs");
+var url = require("url");
+var path = require("path");
+var mime = require('mime');
 
 
 // Routes defined here
 
 /* GET root send OK. */
 router.get('/', function(req, res, next) {
-  console.log('Connected to cluster with %d host(s): %j', req.db.hosts.length, req.db.hosts.keys());
-  console.log('Keyspaces: %j', Object.keys(req.db.metadata.keyspaces));
-  var count = 0;
-  var query = 'SELECT * FROM \"examples\".\"basic\"';
-  res.write("[");
-  req.db.eachRow(query, [], {autoPage: true},
-    // On recv row
-    function(n, row) {
-      ++count;
-      row = JSON.stringify(row);
-      res.write(row + ", ");
-    },
-    // End Callbask
-    function (err) {
-      console.log("Recived %d", count);
-      res.end("]");
-    }
-  );
+  res.end("[]");
 });
 
 /* GET add send OK. */
@@ -65,6 +52,40 @@ router.get('/add', function(req, res, next) {
   });
 });
 
+/* GET move name and send movie. */
+router.get('/movie/:title', function(req, res, next) {
+  var format = ".mp4";
+  var title = req.params.title;
+  var movie = title + format;
+  var file = path.resolve(__dirname, movie);
+  var range = req.headers.range;
+  var positions = range.replace(/bytes=/, "").split("-");
+  var start = parseInt(positions[0], 10);
 
+  fs.stat(file, function(err, stats) {
+    if (err) {
+      res.status(404).send('Not found');
+    }
+    else {
+      var total = stats.size;
+      var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
+      var chunksize = (end - start) + 1;
+
+      res.writeHead(206, {
+        "Content-Range": "bytes " + start + "-" + end + "/" + total,
+        "Accept-Ranges": "bytes",
+        "Content-Length": chunksize,
+        "Content-Type": mime.lookup(format)
+      });
+
+      var stream = fs.createReadStream(file, { start: start, end: end })
+      .on("open", function() {
+        stream.pipe(res);
+      }).on("error", function(err) {
+        res.end(err);
+      });
+    }
+  });
+});
 
 module.exports = router;

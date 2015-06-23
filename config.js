@@ -7,7 +7,7 @@ module.exports = {
   // API cofing options
   "api": {
     // Basic will provide req with username and password strings
-    "auth": "basic",
+    "auth": "none",
     // Headers defined here
     "headers": {
       "Content-Type": "application/json",
@@ -17,7 +17,7 @@ module.exports = {
   // Database options
   "database": {
     // Database to use
-    "type": "cassandra",
+    "type": "none",
     // For cassandra run:
     // docker run -d --net=host tobert/cassandra -name "My Cluster"
     // for additional nodes add: --seed $IP to connect to cluster
