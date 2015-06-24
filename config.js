@@ -1,3 +1,4 @@
+var path = require("path");
 // This file is for config options
 module.exports = {
   // For webpage variables
@@ -5,7 +6,7 @@ module.exports = {
     "title": "napp",
   },
   // The directory media is stored in
-  "media_dir": "../media",
+  "media_dir": __dirname + "/media/",
   // The directory for media to be seen by all
   "all_access": "public",
   // API cofing options
