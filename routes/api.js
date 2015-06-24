@@ -53,39 +53,43 @@ router.get('/add', function(req, res, next) {
 });
 
 /* GET move name and send movie. */
-router.get('/movie/:title', function(req, res, next) {
-  var format = ".mp4";
-  var title = req.params.title;
-  var movie = title + format;
-  var file = path.resolve(__dirname, movie);
-  var range = req.headers.range;
-  var positions = range.replace(/bytes=/, "").split("-");
-  var start = parseInt(positions[0], 10);
+router.get('/movie/:username/:title', function(req, res, next) {
+  if (req.username === req.params.username ||
+    config.all_access === req.params.username)
+  {
+    var format = ".mp4";
+    var title = req.params.title;
+    var movie = title + format;
+    var file = path.resolve(__dirname, movie);
+    var range = req.headers.range;
+    var positions = range.replace(/bytes=/, "").split("-");
+    var start = parseInt(positions[0], 10);
 
-  fs.stat(file, function(err, stats) {
-    if (err) {
-      res.status(404).send('Not found');
-    }
-    else {
-      var total = stats.size;
-      var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
-      var chunksize = (end - start) + 1;
+    fs.stat(file, function(err, stats) {
+      if (err) {
+        res.status(404).send('Not found');
+      }
+      else {
+        var total = stats.size;
+        var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
+        var chunksize = (end - start) + 1;
 
-      res.writeHead(206, {
-        "Content-Range": "bytes " + start + "-" + end + "/" + total,
-        "Accept-Ranges": "bytes",
-        "Content-Length": chunksize,
-        "Content-Type": mime.lookup(format)
-      });
+        res.writeHead(206, {
+          "Content-Range": "bytes " + start + "-" + end + "/" + total,
+          "Accept-Ranges": "bytes",
+          "Content-Length": chunksize,
+          "Content-Type": mime.lookup(format)
+        });
 
-      var stream = fs.createReadStream(file, { start: start, end: end })
-      .on("open", function() {
-        stream.pipe(res);
-      }).on("error", function(err) {
-        res.end(err);
-      });
-    }
-  });
+        var stream = fs.createReadStream(file, { start: start, end: end })
+        .on("open", function() {
+          stream.pipe(res);
+        }).on("error", function(err) {
+          res.end(err);
+        });
+      }
+    });
+  }
 });
 
 module.exports = router;

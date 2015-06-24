@@ -21,7 +21,7 @@ if ( typeof config.api.auth !== "undefined" &&
   config.api.auth === "basic" )
 {
   router.use(function(req, res, next) {
-    var auth;
+    var auth = false;
     // check whether an authorization header was send
     if (req.headers.authorization)
     {
@@ -31,22 +31,21 @@ if ( typeof config.api.auth !== "undefined" &&
       // * split the string at the colon
       // -> should result in an array
       auth = new Buffer(req.headers.authorization.substring(6), 'base64').toString().split(':');
+      // checks if:
+      // * auth array exists
+      // * first value matches the expected user
+      // * second value the expected password
+      // Add them to req for acess by subsequent functions
+      req.username = auth[0]
+      req.password = auth[1]
     }
-
-    // checks if:
-    // * auth array exists
-    // * first value matches the expected user
-    // * second value the expected password
-    // Add them to req for acess by subsequent functions
-    req.username = auth[0]
-    req.password = auth[1]
     if (!auth)
     {
       // any of the tests failed
       // send an Basic Auth request (HTTP Code: 401 Unauthorized)
       res.statusCode = 401;
       // MyRealmName can be changed to anything, will be prompted to the user
-      res.setHeader('WWW-Authenticate', 'Basic realm="MyRealmName"');
+      res.setHeader('WWW-Authenticate', 'Basic realm="NappRealm"');
       // this will displayed in the browser when authorization is cancelled
       res.end('Unauthorized');
     }

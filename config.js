@@ -4,10 +4,14 @@ module.exports = {
   "page": {
     "title": "napp",
   },
+  // The directory media is stored in
+  "media_dir": "../media",
+  // The directory for media to be seen by all
+  "all_access": "public",
   // API cofing options
   "api": {
     // Basic will provide req with username and password strings
-    "auth": "none",
+    "auth": "basic",
     // Headers defined here
     "headers": {
       "Content-Type": "application/json",
