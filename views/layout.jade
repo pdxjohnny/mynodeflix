@@ -6,6 +6,8 @@ html
     link(rel='stylesheet', href='/bootstrap/css/bootstrap.min.css')
     link(rel='stylesheet', href='/bootstrap/css/bootstrap-theme.min.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src='/javascripts/jquery.min.js')
+    script(src='/bootstrap/js/bootstrap.min.js')
   body
     +nav( title, "dropdown_menu")
       +nav_item( "index.html", "active" ) Home
@@ -20,5 +22,3 @@ html
         +nav_item( "#" ) Separated link
         +nav_item( "#" ) One more separated link
     block content
-  script(src='/javascripts/jquery.min.js')
-  script(src='/bootstrap/js/bootstrap.min.js')

@@ -38,6 +38,7 @@ if ( typeof config.api.auth !== "undefined" &&
       // Add them to req for acess by subsequent functions
       req.username = auth[0]
       req.password = auth[1]
+      req.encoded_auth = req.headers.authorization.substring(6);
     }
     if (!auth)
     {

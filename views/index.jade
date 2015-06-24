@@ -3,7 +3,12 @@ extends layout
 
 block content
   +panel(title)
+    input(id="video_dir", type="text", class="form-control", placeholder="public / your username", value="public")
+    input(id="video_name", type="text", class="form-control", placeholder="File Name", value="movie.mp4")
     video(width='320', height='240', controls='controls' src='/api/movie/public/movie.mp4')
-    Upload
-    form(action="/api/movie/public", method="post", enctype="multipart/form-data")
-      input(type="file", name="video_uploaded")
+
+  +panel("Upload Media")
+    script(src='/javascripts/upload.js')
+    form(id="upload_form", action="/api/movie/public", method="post", enctype="multipart/form-data")
+      input(type="file", name="video_uploaded", multiple)
+    input(id="upload_form_button", type="button", class="btn btn-default", value="Upload")

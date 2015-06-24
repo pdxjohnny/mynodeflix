@@ -2,7 +2,7 @@
 module.exports = {
   // For webpage variables
   "page": {
-    "title": "napp",
+    "title": "mynodeflix",
   },
   // The directory media is stored in
   "media_dir": __dirname + "/media/",

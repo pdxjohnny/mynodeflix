@@ -73,12 +73,19 @@ router.post('/movie/:username', function(req, res, next) {
   if (req.username === req.params.username ||
     config.all_access === req.params.username)
   {
+    var save_dir = req.params.username;
+    // Save to the username and passwords directory
+    if (req.username === req.params.username)
+    {
+      save_dir = req.encoded_auth;
+    }
     // Uploader object
     var form = new formidable.IncomingForm();
     // Array of files to precess
     var files = [];
 
-    form.uploadDir = config.media_dir + req.params.username;
+    // The directory the files will be uploaded to
+    form.uploadDir = path.resolve(config.media_dir, save_dir);
 
     form
       .on('file', function(field, file) {
@@ -92,7 +99,10 @@ router.post('/movie/:username', function(req, res, next) {
           var tmp_name = file["path"];
           var real_name = tmp_name.substring(0, tmp_name.lastIndexOf('/'))
             + "/" + file["name"];
-          fs.rename(tmp_name, real_name);
+            // If there was an error just delete the tmp file
+          fs.rename(tmp_name, real_name, function (err) {
+            fs.unlink(tmp_name, function (err) {});
+          });
         }
         // Say that it all went swimingly
         var response = {"OK": true}
