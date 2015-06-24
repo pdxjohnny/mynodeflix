@@ -1,4 +1,3 @@
-var path = require("path");
 // This file is for config options
 module.exports = {
   // For webpage variables

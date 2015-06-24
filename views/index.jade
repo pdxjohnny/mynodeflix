@@ -3,7 +3,7 @@ extends layout
 
 block content
   +panel(title)
-    video(width='320', height='240', controls='controls' src='/api/movie/public/test')
+    video(width='320', height='240', controls='controls' src='/api/movie/public/movie.mp4')
     Upload
     form(action="/api/movie/public", method="post", enctype="multipart/form-data")
       input(type="file", name="video_uploaded")
