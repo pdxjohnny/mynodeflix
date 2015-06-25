@@ -1,0 +1,9 @@
+include bootstrap
+extends layout
+
+block content
+  +panel("Upload Media")
+    script(src='/javascripts/upload.js')
+    form(id="upload_form", action="/api/movie/public", method="post", enctype="multipart/form-data")
+      input(type="file", name="video_uploaded", multiple)
+    input(id="upload_form_button", type="button", class="btn btn-default", value="Upload")
