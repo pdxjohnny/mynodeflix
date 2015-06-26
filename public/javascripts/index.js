@@ -21,11 +21,7 @@ $(function(){
         processData: false
     });
   });
-  var upload_path = ["api", "movie", 0, 0];
-  $("#directory").change(function () {
-    console.log(this.value, $("#upload_form").attr("action").split("/"));
-  })
-  $("#collection").keyup(function () {
+  $("#video_dir").change(function () {
     console.log(this.value, $("#upload_form").attr("action").split("/"));
   })
 });

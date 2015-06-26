@@ -3,11 +3,14 @@ module.exports = {
   // For webpage variables
   "page": {
     "title": "mynodeflix",
+    "columns": 12 / 6,
+    // The directory for media to be seen by all
+    "all_access": "public",
+    // The directory only to be seen by the user
+    "single_access": "private",
   },
   // The directory media is stored in
   "media_dir": __dirname + "/media/",
-  // The directory for media to be seen by all
-  "all_access": "public",
   // API cofing options
   "api": {
     // Basic will provide req with username and password strings

@@ -3,4 +3,9 @@ extends layout
 
 block content
   +panel(title)
-    video(width='320', height='240', controls='controls' src='/api/movie/public/movie.mp4')
+    span( id="columns" style="display: none" ) #{columns}
+    select( id="directory" ).form-control
+      option( value="public" ) Public
+      option( value="personal" ) Personal
+    select( id="collection" ).form-control
+    div( id="media" )
