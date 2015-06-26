@@ -8,6 +8,6 @@ block content
       option( value="#{all_access}" ) Public
       option( value="#{single_access}" ) Personal
     input(id="collection", type="text", placeholder="Collection Name").form-control
-    form(id="upload_form", action="/api/movie/public", method="post", enctype="multipart/form-data")
-      input(type="file", name="video_uploaded", multiple)
-    input(id="upload_form_button", type="button", class="btn btn-default", value="Upload")
+    form(id="upload_form", method="post", enctype="multipart/form-data")
+      input(type="file", name="video_uploaded", multiple).form-control
+    input(id="upload_form_button", type="button", class="btn btn-primary", value="Upload")

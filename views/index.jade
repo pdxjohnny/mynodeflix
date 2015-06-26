@@ -5,7 +5,7 @@ block content
   +panel(title)
     span( id="columns" style="display: none" ) #{columns}
     select( id="directory" ).form-control
-      option( value="public" ) Public
-      option( value="personal" ) Personal
+      option( value="#{all_access}" ) Public
+      option( value="#{single_access}" ) Personal
     select( id="collection" ).form-control
     div( id="media" )

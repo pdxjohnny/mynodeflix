@@ -1,4 +1,6 @@
 $(function(){
+  $("#directory").change(update_upload);
+  $("#collection").keyup(update_upload);
   $("#upload_form_button").click(function () {
     var form_data = new FormData($("#upload_form")[0]);
     $.ajax({
@@ -21,15 +23,16 @@ $(function(){
         processData: false
     });
   });
-  var upload_path = ["api", "movie", 0, 0];
-  $("#directory").change(function () {
-    console.log(this.value, $("#upload_form").attr("action").split("/"));
-  })
-  $("#collection").keyup(function () {
-    console.log(this.value, $("#upload_form").attr("action").split("/"));
-  })
 });
 
 function upload_finished() {
   $("#upload_form")[0].reset();
+}
+
+function update_upload() {
+  var upload_path = ["api", "movie", 0, 0];
+  upload_path[2] = $("#directory").val();
+  upload_path[3] = $("#collection").val();
+  upload_path = '/' + upload_path.join('/');
+  $("#upload_form").attr("action", upload_path);
 }
