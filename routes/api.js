@@ -20,6 +20,36 @@ router.get('/', function(req, res, next) {
 
 /* GET list of content in user directory */
 router.get('/movie/:username', function(req, res, next) {
+  find_dir(req, res, next, function (req, res, next, dir_path) {
+    send_dir(res, dir_path);
+  });
+});
+
+/* GET list of content in collection */
+router.get('/movie/:username/:collection', function(req, res, next) {
+  find_dir(req, res, next, function (req, res, next, dir_path) {
+    dir_path = path.join(dir_path, req.params.collection);
+    send_dir(res, dir_path);
+  });
+});
+
+/* GET send movie from requested directory, all_access or personal. */
+router.get('/movie/:username/:collection/:title', function(req, res, next) {
+  find_dir(req, res, next, function (req, res, next, dir_path) {
+    dir_path = path.join(dir_path, req.params.collection);
+    send_media(req, res, req.params.title, dir_path);
+  });
+});
+
+/* POST upload a movie to personal directory or all_access. */
+router.post('/movie/:username/:collection', function(req, res, next) {
+  find_dir(req, res, next, function (req, res, next, dir_path) {
+    dir_path = path.join(dir_path, req.params.collection);
+    save_media(req, res, dir_path);
+  });
+});
+
+function find_dir(req, res, next, callback) {
   if (config.page.single_access === req.params.username ||
     config.page.all_access === req.params.username)
   {
@@ -29,63 +59,22 @@ router.get('/movie/:username', function(req, res, next) {
     {
       dir_path = req.encoded_auth;
     }
-    send_dir(res, dir_path);
+    return callback(req, res, next, dir_path);
   }
-});
-
-/* GET list of content in collection */
-router.get('/movie/:username/:collection', function(req, res, next) {
-  if (config.page.single_access === req.params.username ||
-    config.page.all_access === req.params.username)
-  {
-    var dir_path = config.page.all_access;
-    // List from collection in the username and passwords directory
-    if (config.page.single_access === req.params.username)
-    {
-      dir_path = req.encoded_auth;
-    }
-    dir_path = path.join(dir_path, req.params.collection);
-    send_dir(res, dir_path);
-  }
-});
-
-/* GET send movie from requested directory, all_access or personal. */
-router.get('/movie/:username/:collection/:title', function(req, res, next) {
-  if (config.page.single_access === req.params.username ||
-    config.page.all_access === req.params.username)
-  {
-    var dir_path = config.page.all_access;
-    // Save to the username and passwords directory
-    if (config.page.single_access === req.params.username)
-    {
-      dir_path = req.encoded_auth;
-    }
-    dir_path = path.join(dir_path, req.params.collection);
-    send_media(req, res, req.params.title, dir_path);
-  }
-});
-
-/* POST upload a movie to personal directory or all_access. */
-router.post('/movie/:username/:collection', function(req, res, next) {
-  if (config.page.single_access === req.params.username ||
-    config.page.all_access === req.params.username)
-  {
-    var dir_path = config.page.all_access;
-    // Save to the username and passwords directory
-    if (config.page.single_access === req.params.username)
-    {
-      dir_path = req.encoded_auth;
-    }
-    dir_path = path.join(dir_path, req.params.collection);
-    save_media(req, res, dir_path);
-  }
-});
+}
 
 function send_dir(res, directory) {
   var readdir = path.resolve(config.media_dir, directory);
   fs.readdir(readdir, function (err, files) {
-    files = JSON.stringify(files);
-    res.end(files);
+    if (err)
+    {
+      res.end("[]");
+    }
+    else
+    {
+      files = JSON.stringify(files);
+      res.end(files);
+    }
   });
 }
 
