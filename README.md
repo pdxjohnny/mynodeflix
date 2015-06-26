@@ -4,7 +4,7 @@ mynodeflix allows you to upload and stream your personal media library.
 
 All Collections
 ---
-[Imgur](http://i.imgur.com/0PcgMJ8.png)
+![Imgur](http://i.imgur.com/0PcgMJ8.png)
 
 Upload Media
 ---
