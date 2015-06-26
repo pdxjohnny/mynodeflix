@@ -33,12 +33,12 @@ function populate_collection(collection) {
     for (var name in data)
     {
       var media_url = dir_path + '/' + data[name];
-      var current = $("#media #" + collection).html();
+      var current = $("#media [id='" + collection + "']").html();
       current += "<video id=\"" + data[name] + "\"" +
         " class=\"div.col-md-2\" src=\"" + media_url + "\"" +
         " height=\"240\"" +
         " controls ></video>";
-      $("#media #" + collection).html(current);
+      $("#media [id='" + collection + "']").html(current);
     }
   });
 }
