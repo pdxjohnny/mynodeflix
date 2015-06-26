@@ -3,9 +3,10 @@ extends layout
 
 block content
   +panel(title)
+    script(src='/javascripts/index.js')
     span( id="columns" style="display: none" ) #{columns}
     select( id="directory" ).form-control
       option( value="#{all_access}" ) Public
       option( value="#{single_access}" ) Personal
-    select( id="collection" ).form-control
+    input( id="collection", placeholder="Collection Name" ).form-control
     div( id="media" )
