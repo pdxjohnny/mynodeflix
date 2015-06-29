@@ -34,10 +34,13 @@ function populate_collection(collection) {
     {
       var media_url = dir_path + '/' + data[name];
       var current = $("#media [id='" + collection + "']").html();
-      current += "<video id=\"" + data[name] + "\"" +
-        " class=\"div.col-md-2\" src=\"" + media_url + "\"" +
+      current += "<div id=\"" + data[name] + "\"" +
+        " class=\"div.col-md-2\" >" +
+        " <video src=\"" + media_url + "\"" +
         " height=\"240\"" +
-        " controls ></video>";
+        " controls ></video><br>" +
+        "<a href=\"" + media_url + "\" >" + data[name] + "</a>" +
+        "</div>";
       $("#media [id='" + collection + "']").html(current);
     }
   });

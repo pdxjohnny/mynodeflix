@@ -10,4 +10,6 @@ block content
     input(id="collection", type="text", placeholder="Collection Name").form-control
     form(id="upload_form", method="post", enctype="multipart/form-data")
       input(type="file", name="video_uploaded", multiple).form-control
+    div.progress
+      div( id="progress" class="progress-bar", role="progressbar", aria-valuemin="0", aria-valuemax="100", style="width:0%") 0%
     input(id="upload_form_button", type="button", class="btn btn-primary", value="Upload")
