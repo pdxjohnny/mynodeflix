@@ -10,6 +10,8 @@ var mime = require('mime');
 var formidable = require('formidable');
 var util = require('util');
 var mkdirp = require('mkdirp');
+var ffmpeg = require('fluent-ffmpeg');
+
 
 // Routes defined here
 
@@ -38,6 +40,14 @@ router.get('/movie/:username/:collection/:title', function(req, res, next) {
   find_dir(req, res, next, function (req, res, next, dir_path) {
     dir_path = path.join(dir_path, req.params.collection);
     send_media(req, res, req.params.title, dir_path);
+  });
+});
+
+/* GET send movie from requested directory, all_access or personal. */
+router.get('/snapshot/:username/:collection/:title', function(req, res, next) {
+  find_dir(req, res, next, function (req, res, next, dir_path) {
+    dir_path = path.join(dir_path, req.params.collection);
+    snapshot(req, res, req.params.title, dir_path);
   });
 });
 
@@ -82,11 +92,6 @@ function send_media(req, res, movie, directory) {
   // Find the path to the file
   var file = path.resolve(config.media_dir, directory);
   file = path.resolve(file, movie);
-  // Determine what part of the file was requested
-  var range = req.headers.range;
-  var positions = range.replace(/bytes=/, "").split("-");
-  var start = parseInt(positions[0], 10);
-
   // Look for the file
   fs.stat(file, function(err, stats) {
     // The file was not found
@@ -97,26 +102,44 @@ function send_media(req, res, movie, directory) {
     // The file was found send the correct part of it
     else
     {
-      // Determine what part of the file to send
-      var total = stats.size;
-      var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
-      var chunksize = (end - start) + 1;
+      if (!req.headers.range)
+      {
+        res.writeHead(200, {
+            'Content-Type': mime.lookup(movie),
+            'Content-Length': stats.size
+        });
 
-      // Send the headers for this part of the file to the client
-      res.writeHead(206, {
-        "Content-Range": "bytes " + start + "-" + end + "/" + total,
-        "Accept-Ranges": "bytes",
-        "Content-Length": chunksize,
-        "Content-Type": mime.lookup(movie)
-      });
+        var read_stream = fs.createReadStream(file);
+        // We replaced all the event handlers with a simple call to readStream.pipe()
+        read_stream.pipe(res);
+      }
+      else
+      {
+        // Determine what part of the file was requested
+        var range = req.headers.range;
+        var positions = range.replace(/bytes=/, "").split("-");
+        var start = parseInt(positions[0], 10);
+        // Determine what part of the file to send
+        var total = stats.size;
+        var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
+        var chunksize = (end - start) + 1;
 
-      // Send the correct part of the file to the client
-      var stream = fs.createReadStream(file, { start: start, end: end })
-      .on("open", function() {
-        stream.pipe(res);
-      }).on("error", function(err) {
-        res.end(err);
-      });
+        // Send the headers for this part of the file to the client
+        res.writeHead(206, {
+          "Content-Range": "bytes " + start + "-" + end + "/" + total,
+          "Accept-Ranges": "bytes",
+          "Content-Length": chunksize,
+          "Content-Type": mime.lookup(movie)
+        });
+
+        // Send the correct part of the file to the client
+        var stream = fs.createReadStream(file, { start: start, end: end })
+        .on("open", function() {
+          stream.pipe(res);
+        }).on("error", function(err) {
+          res.end(err);
+        });
+      }
     }
   });
 }
@@ -156,7 +179,37 @@ function save_media(req, res, save_dir) {
   mkdirp(form.uploadDir, function(err) {
     // Process the upload
     form.parse(req);
-});
+  });
+}
+
+function snapshot(req, res, movie, directory) {
+  // Find the path to the file
+  var file = path.resolve(config.media_dir, directory);
+  file = path.resolve(file, movie);
+  // Look for the file
+  fs.stat(file, function(err, stats) {
+    // The file was not found
+    if (err)
+    {
+      res.status(404).send('Not found');
+    }
+    // The file was found send the correct part of it
+    else
+    {
+      var proc = ffmpeg(file)
+        // set the size of your thumbnails
+        .size('150x100')
+        // setup event handlers
+        .on('end', function(files) {
+          console.log('screenshots were saved as ' + files.join(', '));
+        })
+        .on('error', function(err) {
+          console.log('an error happened: ' + err.message);
+        })
+        // take 1 screenshots at predefined timemarks
+        .takeScreenshots({ count: 1, timemarks: [ '00:00:00.000' ] }, path.resolve(config.media_dir, "tmp"));
+    }
+  });
 }
 
 module.exports = router;
